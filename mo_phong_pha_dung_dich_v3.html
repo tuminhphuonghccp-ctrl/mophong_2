@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Mô phỏng pha dung dịch - V3</title>
+
+<style>
+body { font-family: Arial; display: flex; height: 100vh; }
+.panel { flex: 1; padding: 15px; border: 1px solid #ccc; }
+#workspace { background: #f9f9f9; }
+.item { border: 1px solid #333; padding: 10px; margin: 10px 0; cursor: grab; background: white; }
+#dropZone { border: 2px dashed #666; padding: 15px; min-height: 200px; }
+input { width: 100px; margin-left: 10px; padding: 3px; }
+button { padding: 8px 12px; margin-top: 10px; cursor: pointer; }
+.note { font-size: 13px; color: #444; margin-top: 5px; }
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+<h3>Bài tập</h3>
+
+<div class="item" draggable="true" ondragstart="drag(event)" id="bai1">
+Bài 1. Tính khối lượng mẫu NaOH rắn cần dùng để pha được 100ml dung dịch NaOH 0,1N. 
+Biết NaOH chiếm 80% khối lượng mẫu ban đầu (Cho E NaOH = 40g).
+</div>
+
+<div class="item" draggable="true" ondragstart="drag(event)" id="bai2">
+Bài 2. Tính khối lượng mẫu KMnO4 rắn cần dùng để pha được 250ml dung dịch KMnO4 0,1N, 
+biết KMnO4 chiếm 85% khối lượng mẫu ban đầu (Cho E KMnO4 = 31,6g).
+</div>
+</div>
+
+<div class="panel" id="workspace">
+<h3>Khu vực làm bài</h3>
+
+<div id="dropZone" ondrop="drop(event)" ondragover="allowDrop(event)">
+Kéo đề bài và các bước vào đây theo thứ tự
+</div>
+
+<button onclick="clearWorkspace()">Xóa toàn bộ</button>
+
+<div id="inputArea"></div>
+
+<h3>Kết quả: <span id="result"></span></h3>
+</div>
+
+<div class="panel">
+<h3>Công thức & bước</h3>
+
+<div class="item" draggable="true" ondragstart="drag(event)" id="ct1">
+C = m × 1000 / (E × V)
+</div>
+
+<div class="item" draggable="true" ondragstart="drag(event)" id="ct2">
+m = C × E × V / 1000
+</div>
+
+<div class="item" draggable="true" ondragstart="drag(event)" id="ct3">
+m thực tế = C × E × V / (10 × H)
+<div class="note">H: Là độ tinh khiết của mẫu</div>
+</div>
+
+<div class="item" draggable="true" ondragstart="drag(event)">
+Áp dụng công thức
+</div>
+
+<div class="item" draggable="true" ondragstart="drag(event)">
+Khối lượng hóa chất tinh khiết cần lấy
+</div>
+
+<div class="item" draggable="true" ondragstart="drag(event)">
+Khối lượng mẫu hóa chất cần lấy
+</div>
+
+</div>
+
+<script>
+function allowDrop(ev) { ev.preventDefault(); }
+
+function drag(ev) {
+    ev.dataTransfer.setData("id", ev.target.id);
+    ev.dataTransfer.setData("text", ev.target.innerText);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    let id = ev.dataTransfer.getData("id");
+    let text = ev.dataTransfer.getData("text");
+
+    if (!text) return;
+
+    let p = document.createElement("p");
+    p.innerText = text;
+    document.getElementById("dropZone").appendChild(p);
+
+    if (id === "ct3") { showInputs(); }
+}
+
+function showInputs() {
+    let html = `
+        <h4>Nhập giá trị:</h4>
+        E = <input id="E"><br><br>
+        C = <input id="C"><br><br>
+        V = <input id="V"><br><br>
+        H = <input id="H"><br><br>
+        <button onclick="calculate()">Tính</button>
+    `;
+    document.getElementById("inputArea").innerHTML = html;
+}
+
+function calculate() {
+    let E = parseFloat(document.getElementById("E").value);
+    let C = parseFloat(document.getElementById("C").value);
+    let V = parseFloat(document.getElementById("V").value);
+    let H = parseFloat(document.getElementById("H").value);
+
+    if (isNaN(E) || isNaN(C) || isNaN(V) || isNaN(H)) {
+        alert("Vui lòng nhập đầy đủ và đúng số!");
+        return;
+    }
+
+    let m = (C * E * V) / (10 * H);
+    document.getElementById("result").innerText = m.toFixed(3) + " g";
+}
+
+function clearWorkspace() {
+    document.getElementById("dropZone").innerHTML = "Kéo đề bài và các bước vào đây theo thứ tự";
+    document.getElementById("inputArea").innerHTML = "";
+    document.getElementById("result").innerText = "";
+}
+</script>
+
+</body>
+</html>
